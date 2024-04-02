@@ -12,6 +12,8 @@ const tokenAddress = "0x41A929e65F6733fEe64A293aD5A1CA3b8A0854BF"; //Alfajores
 const App = () => {
   // store greeting in local state
   const [greeting, setGreetingValue] = useState();
+  const [userAccount, setUserAccount] = useState();
+  const [amount, setAmount] = useState();
 
   // request access to the user's MetaMask account
   const requestAccount = async () => {
@@ -36,7 +38,7 @@ const App = () => {
     }
   };
 
-  // call the smart contract, send an update
+  // call the smart contract to set new Greeting update
   const setGreeting = async () => {
     if (!greeting) return;
     if (typeof window.ethereum !== "undefined") {
@@ -46,6 +48,7 @@ const App = () => {
       const contract = new ethers.Contract(greeterAddress, Greeter.abi, signer);
       const transaction = await contract.setGreeting(greeting);
       await transaction.wait();
+      setGreetingValue(" ");
       console.log(greeting);
       fetchGreeting();
     }
@@ -74,7 +77,7 @@ const App = () => {
     if (typeof window.ethereum !== "undefined") {
       await requestAccount();
       const web3provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = web3provider.getSigner();
+      const signer = await web3provider.getSigner();
       const contract = new ethers.Contract(tokenAddress, Token.abi, signer);
       const transation = await contract.transfer(userAccount, amount);
       await transation.wait();
